@@ -60,8 +60,19 @@ final class WeatherPresenterTests: XCTestCase {
             forecastNight: sampleForecastNight
         )
         
-        presenter.didFetchWeather(weatherData)
+        let city = City(
+            name: "Pune",
+            localNames: LocalNames(kn: "", mr: "", ru: "", ta: "", ur: "", ja: "", pa: "", hi: "", en: "", ar: "", ml: "", uk: ""),
+            lat: 18.5204,
+            lon: 73.8567,
+            country: "IN",
+            state: "Maharashtra"
+        )
         
+        presenter.didFetchWeather(weatherData, city: city)
+        
+        XCTAssertEqual(presenter.cityNameText, "Pune")
+        XCTAssertEqual(presenter.countryNameText, "IN")
         XCTAssertEqual(presenter.dateText, "May 15")
         XCTAssertEqual(presenter.isNight, false)
         XCTAssertEqual(presenter.dayText, "Thursday")
@@ -78,7 +89,8 @@ final class WeatherPresenterTests: XCTestCase {
         let error = NSError(domain: "WeatherError", code: 500, userInfo: nil)
         
         presenter.didFailFetchingWeather(error)
-        
+        XCTAssertEqual(presenter.cityNameText, "--")
+        XCTAssertEqual(presenter.countryNameText, "--")
         XCTAssertEqual(presenter.dateText, "--")
         XCTAssertEqual(presenter.isNight, false)
         XCTAssertEqual(presenter.dayText, "--")

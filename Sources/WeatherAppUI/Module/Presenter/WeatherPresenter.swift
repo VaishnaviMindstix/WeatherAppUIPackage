@@ -8,12 +8,14 @@
 import Foundation
 
 protocol WeatherPresenterProtocol {
-    func didFetchWeather(_ data: WeatherData)
+    func didFetchWeather(_ data: WeatherData, city: City)
     func didFailFetchingWeather(_ error: Error)
 }
 
 @available(iOS 14.0, *)
 class WeatherPresenter: ObservableObject, WeatherPresenterProtocol {
+    @Published var cityNameText              = "--"
+    @Published var countryNameText           = "--"
     @Published var dateText                  = "--"
     @Published var isNight                   = false
     @Published var dayText                   = "--"
@@ -25,7 +27,9 @@ class WeatherPresenter: ObservableObject, WeatherPresenterProtocol {
     
     var interactor: WeatherInteractorProtocol?
     
-    func didFetchWeather(_ data: WeatherData) {
+    func didFetchWeather(_ data: WeatherData, city: City) {
+        cityNameText    = city.name
+        countryNameText = city.country ?? ""
         dateText        = data.date
         isNight         = data.isNight
         dayText         = data.day
@@ -37,13 +41,15 @@ class WeatherPresenter: ObservableObject, WeatherPresenterProtocol {
     }
     
     func didFailFetchingWeather(_ error: Error) {
-        dateText       = "--"
-        isNight        = false
-        dayText        = "--"
-        tempText       = "--"
-        conditionText  = "Error"
-        symbolNameText = "--"
-        forecastDay    = []
-        forecastNight  = []
+        cityNameText    = "--"
+        countryNameText = "--"
+        dateText        = "--"
+        isNight         = false
+        dayText         = "--"
+        tempText        = "--"
+        conditionText   = "Error"
+        symbolNameText  = "--"
+        forecastDay     = []
+        forecastNight   = []
     }
 }

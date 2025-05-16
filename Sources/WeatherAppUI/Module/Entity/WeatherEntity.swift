@@ -47,3 +47,23 @@ struct Weather: Codable {
     let id: Int
     let description: String
 }
+
+    
+public struct City: Identifiable, Decodable {
+    public let id = UUID()
+    public let name: String
+    public let localNames: LocalNames?
+    public let lat, lon: Double
+    public let country, state: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case name
+        case localNames = "local_names"
+        case lat, lon, country, state
+    }
+}
+
+
+public struct LocalNames: Codable {
+    public let kn, mr, ru, ta, ur, ja, pa, hi, en, ar, ml, uk: String?
+}

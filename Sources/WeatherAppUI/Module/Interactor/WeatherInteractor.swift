@@ -14,13 +14,13 @@ protocol WeatherInteractorProtocol {
 class WeatherInteractor: WeatherInteractorProtocol {
     var presenter: WeatherPresenterProtocol?
     
-    private let apiKey = "7680173a10a51e4c9f257d3c59a84f9c"
-    private let city = "Pune"
+    var apiKey: String = ""
+    var city: City = City(name: "Pune", localNames: LocalNames(kn: "", mr: "", ru: "", ta: "", ur: "", ja: "", pa: "", hi: "", en: "", ar: "", ml: "", uk: ""), lat: 18.5204, lon: 73.8567, country: "IN", state: "Maharashtra")
     
     func fetchWeather() {
         let urlString =
-        "https://api.openweathermap.org/data/2.5/forecast?q=\(city)&appid=\(apiKey)&units=metric"
-        
+        "https://api.openweathermap.org/data/2.5/forecast?lat=\(city.lat)&lon=\(city.lon)&appid=\(apiKey)&units=metric"
+
         guard let url = URL(string: urlString) else { return }
         
         URLSession.shared.dataTask(with: url) { data, _, error in
@@ -130,7 +130,7 @@ class WeatherInteractor: WeatherInteractorProtocol {
                 )
                 
                 DispatchQueue.main.async {
-                    self.presenter?.didFetchWeather(weatherData)
+                    self.presenter?.didFetchWeather(weatherData, city: self.city)
                 }
                 
             } catch {

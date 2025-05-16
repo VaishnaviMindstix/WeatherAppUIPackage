@@ -18,7 +18,7 @@ public struct WeatherLandingView: View {
                            midColor: isNight ? Color("GreyColor") : Color("LightBlueColor"),
                            bottommColor: isNight ? Color("LightGreyColor") : Color("WhiteBlueColor"))
             VStack{
-                CityNameView(cityName: "Pune, MH")
+                CityNameView(cityName: presenter.cityNameText, countryName: presenter.countryNameText)
                 
                 VStack(spacing: 4){
                     Spacer()
@@ -119,9 +119,10 @@ struct BackgroundView: View{
 @available(iOS 14.0, *)
 struct CityNameView: View{
     var cityName:String
+    var countryName:String
     
     var body: some View{
-        Text(cityName)
+        Text("\(cityName) \(countryName)")
             .font(.system(size: 40, weight: .medium, design: .default))
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)

@@ -6,13 +6,16 @@
 //
 
 import Foundation
+import WeatherDataSharedModel
 
 protocol WeatherInteractorProtocol {
     func fetchWeather()
 }
 
+@available(iOS 13.0, *)
 class WeatherInteractor: WeatherInteractorProtocol {
     var presenter: WeatherPresenterProtocol?
+    var presenterHistory: WeatherHistoryPresenter?
     
     var apiKey: String = ""
     var city: City = City(name: "Pune", localNames: LocalNames(kn: "", mr: "", ru: "", ta: "", ur: "", ja: "", pa: "", hi: "", en: "", ar: "", ml: "", uk: ""), lat: 18.5204, lon: 73.8567, country: "IN", state: "Maharashtra")
@@ -68,8 +71,8 @@ class WeatherInteractor: WeatherInteractorProtocol {
                 }
                 
                 let sortedDays = groupedByDate.keys.sorted().prefix(5) // Next 5 days
-                var forecastDay: [Forecast] = []
-                var forecastNight: [Forecast] = []
+                var forecastDay: [ForecastSharedModel] = []
+                var forecastNight: [ForecastSharedModel] = []
                 
                 for day in sortedDays {
                     let entriesForDay = groupedByDate[day] ?? []
@@ -92,7 +95,7 @@ class WeatherInteractor: WeatherInteractorProtocol {
                     
                     if let dayEntry = dayEntry,
                        let info = self.parseDateInfo(from: dayEntry.dt_txt) {
-                        forecastDay.append(Forecast(
+                        forecastDay.append(ForecastSharedModel(
                             date: info.formattedDate,
                             isNight: info.isNight,
                             day: info.shortDayOfWeek,
@@ -105,7 +108,7 @@ class WeatherInteractor: WeatherInteractorProtocol {
                     
                     if let nightEntry = nightEntry,
                        let info = self.parseDateInfo(from: nightEntry.dt_txt) {
-                        forecastNight.append(Forecast(
+                        forecastNight.append(ForecastSharedModel(
                             date: info.formattedDate,
                             isNight: info.isNight,
                             day: info.shortDayOfWeek,
@@ -117,7 +120,8 @@ class WeatherInteractor: WeatherInteractorProtocol {
                     }
                 }
                 
-                let weatherData = WeatherData(
+                let weatherData = WeatherDataSharedModel(
+                    city: self.city.name,
                     date: currentDateInfo.formattedDate,
                     isNight: currentDateInfo.isNight,
                     day: currentDateInfo.shortDayOfWeek,
@@ -129,8 +133,11 @@ class WeatherInteractor: WeatherInteractorProtocol {
                     forecastNight: forecastNight
                 )
                 
+                
+                
                 DispatchQueue.main.async {
                     self.presenter?.didFetchWeather(weatherData, city: self.city)
+                    self.presenterHistory?.addItem(data: weatherData)
                 }
                 
             } catch {

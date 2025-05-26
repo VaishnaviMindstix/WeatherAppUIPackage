@@ -6,29 +6,6 @@
 //
 import Foundation
 
-struct Forecast: Identifiable {
-    let id = UUID()
-    let date: String
-    let isNight: Bool
-    let day: String
-    let temp: String
-    let condition: String
-    let conditionId: Int
-    let symbolName: String
-}
-
-struct WeatherData {
-    let date: String
-    let isNight: Bool
-    let day: String
-    let currentTemp: String
-    let condition: String
-    let conditionId: Int
-    let symbolName: String
-    let forecastDay: [Forecast]
-    let forecastNight: [Forecast]
-}
-
 struct OpenWeatherResponse: Codable {
     let list: [WeatherEntry]
 }

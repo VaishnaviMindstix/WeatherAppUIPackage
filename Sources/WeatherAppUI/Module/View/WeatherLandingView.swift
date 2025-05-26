@@ -11,44 +11,79 @@ import SwiftUI
 public struct WeatherLandingView: View {
     @StateObject var presenter: WeatherPresenter
     @State private var isNight: Bool = false
+    @State private var showHistory: Bool = false // Step 1: Navigation state
     
     public var body: some View {
-        ZStack{
-            BackgroundView(topColor: isNight ? Color("BlackColor") : Color("BlueColor"),
-                           midColor: isNight ? Color("GreyColor") : Color("LightBlueColor"),
-                           bottommColor: isNight ? Color("LightGreyColor") : Color("WhiteBlueColor"))
-            VStack{
-                CityNameView(cityName: presenter.cityNameText, countryName: presenter.countryNameText)
-                
-                VStack(spacing: 4){
-                    Spacer()
-                    MainWeatherStatusView(imageName: presenter.symbolNameText,
-                                          condition: presenter.conditionText,
-                                          temp: presenter.tempText,
-                                          date: presenter.dateText)
-                    Spacer()
-                    HStack(){
-                        ForEach(isNight ? presenter.forecastNight : presenter.forecastDay) { day in
-                            WeatherDayView(dayOfWeek: day.day,
-                                           imageName: day.symbolName,
-                                           temp: day.temp, condition: day.condition, conditionId: day.conditionId, isNight: $isNight)
+        NavigationView { // Step 2: Wrap in NavigationView
+            ZStack{
+                BackgroundView(topColor: isNight ? Color("BlackColor") : Color("BlueColor"),
+                               midColor: isNight ? Color("GreyColor") : Color("LightBlueColor"),
+                               bottommColor: isNight ? Color("LightGreyColor") : Color("WhiteBlueColor"))
+                VStack{
+                    CityNameView(cityName: presenter.cityNameText, countryName: presenter.countryNameText)
+                    
+                    VStack(spacing: 4){
+                        Spacer()
+                        MainWeatherStatusView(imageName: presenter.symbolNameText,
+                                              condition: presenter.conditionText,
+                                              temp: presenter.tempText,
+                                              date: presenter.dateText)
+                        Spacer()
+                        HStack(){
+                            if isNight{
+                                if let forecastNight = presenter.forecastNight{
+                                    ForEach(forecastNight) { night in
+                                        WeatherDayView(dayOfWeek: night.day,
+                                                       imageName: night.symbolName,
+                                                       temp: night.temp, condition: night.condition, conditionId: night.conditionId, isNight: $isNight)
+                                    }
+                                }
+                            }else{
+                                if let forecastDay = presenter.forecastDay{
+                                    ForEach(forecastDay) { day in
+                                        WeatherDayView(dayOfWeek: day.day,
+                                                       imageName: day.symbolName,
+                                                       temp: day.temp, condition: day.condition, conditionId: day.conditionId, isNight: $isNight)
+                                    }
+                                    
+                                }
+                            }
                         }
+                        .padding()
+                        Spacer()
+                        Button{
+                            isNight.toggle()
+                            print("Button Pressed")
+                        } label: {
+                            WeatherButton(title: "Change Day Time", backgroundColor: isNight ? Color("BlackColor") : Color("BlueColor"), textColor: Color.white)
+                        }
+                        Spacer()
+                        // Step 3: Add History Button + NavigationLink
+                        NavigationLink(
+                            destination: WeatherHistoryView(presenter: WeatherHistoryPresenter(interactor: WeatherHistoryInteractor(context: PersistenceController.shared.container.viewContext))),
+                            isActive: $showHistory
+                        ) {
+                            EmptyView()
+                        }
+                        
+                        Button {
+                            showHistory = true
+                        } label: {
+                            WeatherButton(
+                                title: "Show Weather History",
+                                backgroundColor: Color.gray,
+                                textColor: Color.white
+                            )
+                        }
+                        
+                        Spacer()
                     }
-                    .padding()
-                    Spacer()
-                    Button{
-                        isNight.toggle()
-                        print("Button Pressed")
-                    } label: {
-                        WeatherButton(title: "Change Day Time", backgroundColor: isNight ? Color("BlackColor") : Color("BlueColor"), textColor: Color.white)
-                    }
-                    Spacer()
                 }
             }
-        }
-        .onAppear {
-            presenter.interactor?.fetchWeather()
-            isNight = presenter.isNight
+            .onAppear {
+                presenter.interactor?.fetchWeather()
+                isNight = presenter.isNight
+            }
         }
     }
 }

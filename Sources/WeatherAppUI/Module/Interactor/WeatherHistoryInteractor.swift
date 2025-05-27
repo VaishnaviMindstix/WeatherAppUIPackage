@@ -37,6 +37,14 @@ final class WeatherHistoryInteractor: WeatherHistoryInteractorProtocol {
     }
 
     func addWeatherItem(_ item: WeatherDataSharedModel) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM dd, yyyy" // Your format
+        
+        guard let itemDate = dateFormatter.date(from: item.date) else {
+            print("Invalid date format for item: \(item.date)")
+            return
+        }
+        
         let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "city == %@ AND date == %@ AND isNight == %@", item.city, item.date, NSNumber(value: item.isNight))
 
@@ -56,6 +64,19 @@ final class WeatherHistoryInteractor: WeatherHistoryInteractorProtocol {
         newItem.symbolName = item.symbolName
 
         try? context.save()
+        
+        let allItemsRequest: NSFetchRequest<Item> = Item.fetchRequest()
+        if let allItems = try? context.fetch(allItemsRequest) {
+            let tenDaysAgo = Calendar.current.date(byAdding: .day, value: -10, to: Date())!
+            
+            for item in allItems {
+                if let dateStr = item.date, let date = dateFormatter.date(from: dateStr), date < tenDaysAgo {
+                    context.delete(item)
+                }
+            }
+            
+            try? context.save()
+        }
     }
 
     func deleteItem(at offsets: IndexSet) {

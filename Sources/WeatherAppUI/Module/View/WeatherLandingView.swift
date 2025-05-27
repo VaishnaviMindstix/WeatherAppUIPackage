@@ -11,7 +11,6 @@ import SwiftUI
 public struct WeatherLandingView: View {
     @StateObject var presenter: WeatherPresenter
     @State private var isNight: Bool = false
-    @State private var showHistory: Bool = false // Step 1: Navigation state
     
     public var body: some View {
         NavigationView { // Step 2: Wrap in NavigationView
@@ -55,27 +54,8 @@ public struct WeatherLandingView: View {
                             isNight.toggle()
                             print("Button Pressed")
                         } label: {
-                            WeatherButton(title: "Change Day Time", backgroundColor: isNight ? Color("BlackColor") : Color("BlueColor"), textColor: Color.white)
+                            WeatherButton(title: "Change\nDay Time", backgroundColor: isNight ? Color("BlackColor") : Color("BlueColor"), textColor: Color.white, height: 80)
                         }
-                        Spacer()
-                        // Step 3: Add History Button + NavigationLink
-                        NavigationLink(
-                            destination: WeatherHistoryView(presenter: WeatherHistoryPresenter(interactor: WeatherHistoryInteractor(context: PersistenceController.shared.container.viewContext))),
-                            isActive: $showHistory
-                        ) {
-                            EmptyView()
-                        }
-                        
-                        Button {
-                            showHistory = true
-                        } label: {
-                            WeatherButton(
-                                title: "Show Weather History",
-                                backgroundColor: Color.gray,
-                                textColor: Color.white
-                            )
-                        }
-                        
                         Spacer()
                     }
                 }
@@ -193,6 +173,7 @@ struct MainWeatherStatusView: View{
         .frame(maxWidth: .infinity)
     }
 }
+
 
 
 

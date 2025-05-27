@@ -18,24 +18,14 @@ public struct WeatherHistoryView: View {
                                 BackgroundView(topColor: item.isNight ? Color("BlackColor") : Color("BlueColor"),
                                                midColor: item.isNight ? Color("GreyColor") : Color("LightBlueColor"),
                                                bottommColor: item.isNight ? Color("LightGreyColor") : Color("WhiteBlueColor"))
-                                HStack {
-                                    if #available(iOS 15.0, *) {
-                                        Image(systemName: item.symbolName)
-                                            .symbolRenderingMode(.multicolor)
-                                            .resizable()
-                                        //                .foregroundStyle(isNight ? .pink : .yellow) //.hierarchical // .monochrome
-                                        //                .foregroundStyle(isNight ? .white : .white, isNight ? .gray : .yellow, isNight ? .yellow : .blue)  //.pallete
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 40, height: 40)
-                                    } else {
-                                        Image(systemName: item.symbolName)
-                                            .renderingMode(.original)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 40, height: 40)
-                                    }
-                                    Text("\(item.city) with Temperature \(item.currentTemp)")
-                                        .foregroundColor(.white)
+                                VStack(spacing: 20) {
+                                    CityNameView(cityName: item.city, countryName: "")
+                                        .multilineTextAlignment(.center)
+                                    MainWeatherStatusView(imageName: item.symbolName,
+                                                          condition: item.condition,
+                                                          temp: item.currentTemp,
+                                                          date: item.date)
+                                    .foregroundColor(Color.white)
                                 }
                             }
                             

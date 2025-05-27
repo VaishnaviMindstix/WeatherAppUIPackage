@@ -6,7 +6,9 @@
 //
 
 import XCTest
+import WeatherDataSharedModel
 @testable import WeatherAppUI
+
 
 @available(iOS 14.0, *)
 final class WeatherPresenterTests: XCTestCase {
@@ -25,7 +27,7 @@ final class WeatherPresenterTests: XCTestCase {
     
     func testDidFetchWeatherUpdatesPropertiesCorrectly() {
         let sampleForecastDay = [
-            Forecast(
+            ForecastSharedModel(
                 date: "2025-05-15 09:00:00",
                 isNight: false,
                 day: "Thursday",
@@ -37,7 +39,7 @@ final class WeatherPresenterTests: XCTestCase {
         ]
         
         let sampleForecastNight = [
-            Forecast(
+            ForecastSharedModel(
                 date: "2025-05-15 21:00:00",
                 isNight: true,
                 day: "Thursday",
@@ -48,7 +50,8 @@ final class WeatherPresenterTests: XCTestCase {
             )
         ]
         
-        let weatherData = WeatherData(
+        let weatherData = WeatherDataSharedModel(
+            city: "Pune",
             date: "May 15",
             isNight: false,
             day: "Thursday",
@@ -79,10 +82,10 @@ final class WeatherPresenterTests: XCTestCase {
         XCTAssertEqual(presenter.tempText, "22°C")
         XCTAssertEqual(presenter.conditionText, "Sunny")
         XCTAssertEqual(presenter.symbolNameText, "sun.max")
-        XCTAssertEqual(presenter.forecastDay.count, 1)
-        XCTAssertEqual(presenter.forecastNight.count, 1)
-        XCTAssertEqual(presenter.forecastDay.first?.symbolName, "sun.max")
-        XCTAssertEqual(presenter.forecastNight.first?.symbolName, "moon.stars")
+        XCTAssertEqual(presenter.forecastDay?.count, 1)
+        XCTAssertEqual(presenter.forecastNight?.count, 1)
+        XCTAssertEqual(presenter.forecastDay?.first?.symbolName, "sun.max")
+        XCTAssertEqual(presenter.forecastNight?.first?.symbolName, "moon.stars")
     }
     
     func testDidFailFetchingWeatherResetsProperties() {
@@ -97,7 +100,7 @@ final class WeatherPresenterTests: XCTestCase {
         XCTAssertEqual(presenter.tempText, "--")
         XCTAssertEqual(presenter.conditionText, "Error")
         XCTAssertEqual(presenter.symbolNameText, "--")
-        XCTAssertTrue(presenter.forecastDay.isEmpty)
-        XCTAssertTrue(presenter.forecastNight.isEmpty)
+        XCTAssertTrue(((presenter.forecastDay?.isEmpty) != nil))
+        XCTAssertTrue(((presenter.forecastNight?.isEmpty) != nil))
     }
 }

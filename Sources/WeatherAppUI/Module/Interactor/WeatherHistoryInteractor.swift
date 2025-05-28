@@ -38,7 +38,7 @@ final class WeatherHistoryInteractor: WeatherHistoryInteractorProtocol {
 
     func addWeatherItem(_ item: WeatherDataSharedModel) {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM dd, yyyy" // Your format
+        dateFormatter.dateFormat = "MMM dd, yyyy"
         
         guard let itemDate = dateFormatter.date(from: item.date) else {
             print("Invalid date format for item: \(item.date)")
